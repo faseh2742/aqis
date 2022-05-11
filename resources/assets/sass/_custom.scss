@@ -1,0 +1,35 @@
+//Title
+.md-card .title {
+    color: white;
+}
+.md-card .titleCategory {
+    color: whitesmoke;
+    font-style: italic;
+}
+
+.md-progress-spinner-centre {
+    display: inline-grid;
+    position: absolute;
+    z-index: +5;
+    top: 50%;
+    left: 50%;
+}
+
+.full-control > .md-list {
+    width: 320px;
+    max-width: 100%;
+    height: 400px;
+    display: inline-block;
+    overflow: auto;
+    border: 1px solid rgba(#000, .12);
+    vertical-align: top;
+  }
+
+  $modal-content-width: 768px;
+
+.ck.ck-editor {
+    min-width: 641px;
+}
+.ck.ck-toolbar {
+    position: sticky;
+}

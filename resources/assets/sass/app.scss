@@ -1,0 +1,42 @@
+
+// // Fonts
+// @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
+
+
+
+// // Bootstrap
+// // @import '~bootstrap/scss/bootstrap';
+
+// .navbar-laravel {
+//   background-color: #fff;
+//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+// }
+
+
+// BULMA-START
+// @import '~bulma-start/css/main.css';
+$modal-content-width: 768px;
+
+
+
+
+// Dashboard SCSS
+@import '../scss/material-dashboard.scss';
+
+//SweetAlert 2
+@import 'sweetalert2/src/sweetalert2.scss';
+
+//vue-multiselect
+@import "~vue-multiselect/dist/vue-multiselect.min.css";
+
+// Bulma
+@import '~bulma/bulma';
+
+// // Custom Variables
+@import "./custom";
+
+@import '~@hokify/vuejs-datepicker/dist/vuejs-datepicker.css';
+
+@import '~@fullcalendar/core/main.css';
+@import '~@fullcalendar/daygrid/main.css';
+@import '~@fullcalendar/timegrid/main.css';
