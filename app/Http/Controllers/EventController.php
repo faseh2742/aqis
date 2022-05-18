@@ -18,5 +18,7 @@ class EventController extends Controller
             'end' => $end,
             'title' => $request->title,
         ]);
+    
+
     }
 }

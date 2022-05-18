@@ -6,6 +6,7 @@ use App\Clientworkshop;
 use Mail;
 use App\Mail\meetingLink;
 use App\Clientmeeting;
+use App\Activity;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,12 @@ class ClientmeetingController extends Controller
         elseif ($clientmeeting->status=='Accept'&& $status=='Accept') {
             return "<h1>Meeting Status</h1> <p>You Already Accepted this Meeting</p>";
         }
+        elseif ($clientmeeting->status=='Attended') {
+            return "<h1>Meeting Status</h1> <p>You Already Attended this Meeting</p>";
+        }
+        elseif ($clientmeeting->status=='Client Cancelled') {
+            return "<h1>Meeting Status</h1> <p>You Already Cancelled this Meeting</p>";
+        }
         else{
 
             $clientmeeting->update([
@@ -37,7 +44,7 @@ class ClientmeetingController extends Controller
                 return "<h1>Decline</h1> <p>You Declined this Meeting</p>";
             }
             if ($status=='Accept') {
-                return "<h1>Decline</h1> <p>You Accepted this Meeting</p>";
+                return "<h1>Accept</h1> <p>You Accepted this Meeting</p>";
             }
 
         }
@@ -86,6 +93,11 @@ class ClientmeetingController extends Controller
             'notes' => $request->notes,
             'duration'=> $duration,
           ]);
+          $activity=new Activity();
+          $activity->description=$clientmeeting->client->user->username." | Client Meeting Added";
+          $activity->user_id=Auth::id();
+          $activity->save();
+
           if($request->serviceDelivery=="Video Portal"){
         $user= \App\User::where(['id'=>$request->client_id])->first();
        // $user= \App\User::where(['client_id'=>3432])->first();
@@ -132,7 +144,7 @@ class ClientmeetingController extends Controller
         $clientmeeting->programName=$request->programName;
         $clientmeeting->serviceProvided= $request->serviceProvided;
         $clientmeeting->meetingLink = $request->meetingLink;
-        $clientmeeting->status = 'pending';
+        $clientmeeting->status =$request->status;
         $clientmeeting->type= $request->type;
         $clientmeeting->date= $date;
         $clientmeeting->serviceDelivery = $request->serviceDelivery;
@@ -142,6 +154,11 @@ class ClientmeetingController extends Controller
         $clientmeeting->notes= $request->notes;
         $clientmeeting->duration= $duration;
         $clientmeeting ->update();
+
+           $activity=new Activity();
+          $activity->description=$clientmeeting->client->user->username." | Client Meeting Updated";
+          $activity->user_id=Auth::id();
+          $activity->save();
 
 
         // $clientmeeting = Clientmeeting::create([
@@ -187,6 +204,11 @@ class ClientmeetingController extends Controller
     public function destroy($id)
     {
         $clientmeeting = Clientmeeting::findorFail($id);
+        $activity=new Activity();
+          $activity->description=$clientmeeting->client->user->username." | Client Meeting Deleted";
+          $activity->user_id=Auth::id();
+          $activity->save();
+
         $clientmeeting->delete();
 
         return 204;

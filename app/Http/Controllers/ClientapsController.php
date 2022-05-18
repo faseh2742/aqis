@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Aptemplate;
 use App\Client;
+use App\Activity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Clientap;
@@ -15,16 +16,16 @@ class ClientapsController extends Controller
 
     public function index($id)
     {
-      $clientaps = Clientemployment::where('client_id', $id)
-                ->orderBy('id', 'DESC')->get();
+        $clientaps = Clientemployment::where('client_id', $id)
+            ->orderBy('id', 'DESC')->get();
 
-      return $clientaps;
+        return $clientaps;
     }
 
     public function store(Request $request)
     {
-       $clientap = Clientap::create([
-           'aptemplate_id' => $request->aptemplate_id,
+        $clientap = Clientap::create([
+            'aptemplate_id' => $request->aptemplate_id,
             'client_id' => $request->client_id,
             'clientmeeting_id' => $request->clientmeeting_id,
             'staff_id' => $request->staff_id,
@@ -38,7 +39,7 @@ class ClientapsController extends Controller
             'mentoring' => Purifier::clean($request->mentoring),
             'portfolioWorkshop' => Purifier::clean($request->portfolioWorkshop),
             'otherResources' => Purifier::clean($request->otherResources),
-       ]);
+        ]);
 
         foreach ((array) $request->certLicenseReferrals as $referral) {
             $clientap->referrals()->attach($referral['id'], ['category' => 'certificationLicensing']);
@@ -69,6 +70,10 @@ class ClientapsController extends Controller
         }
 
         $clientap->noc = unserialize($clientap->noc);
+        $activity = new Activity();
+        $activity->description = $clientap->client->user->username . " | Action Plan Saved";
+        $activity->user_id = Auth::id();
+        $activity->save();
 
         return $clientap;
     }
@@ -101,7 +106,7 @@ class ClientapsController extends Controller
             'mentoring' => Purifier::clean($request->mentoring),
             'portfolioWorkshop' => Purifier::clean($request->portfolioWorkshop),
             'otherResources' => Purifier::clean($request->otherResources),
-      ]);
+        ]);
 
         $clientap->referrals()->detach();
 
@@ -134,9 +139,11 @@ class ClientapsController extends Controller
         }
 
         $clientap->noc = unserialize($clientap->noc);
-
+        $activity = new Activity();
+        $activity->description = $clientap->client->user->username . " | Action Plan Updated";
+        $activity->user_id = Auth::id();
+        $activity->save();
         return $clientap;
-
     }
 
     public function getReferrals($id, $category)
@@ -160,19 +167,24 @@ class ClientapsController extends Controller
 
     public function destroy($id)
     {
-      $clientap = Clientap::findorFail($id);
-      $clientap->delete();
+        $clientap = Clientap::findorFail($id);
+        $activity = new Activity();
+        $activity->description = $clientap->client->user->username . " | Action Plan Deleted";
+        $activity->user_id = Auth::id();
+        $activity->save();
+        $clientap->delete();
 
-      return 204;
+        return 204;
     }
 
-    public function attachTemplates() {
+    public function attachTemplates()
+    {
         $clientaps = Clientap::where('aptemplate_id', 0)->get();
 
         $clientaps->each(function ($item, $key) {
             $aptemplate = Aptemplate::where('noc', $item->noc)->first();
 
-//            return $aptemplate;
+            //            return $aptemplate;
 
             if ($aptemplate) {
                 $item->aptemplate_id = $aptemplate->id;
@@ -180,10 +192,15 @@ class ClientapsController extends Controller
         });
 
         $clientaps->each(function ($item, $key) {
-           $clientap = Clientap::find($item->id);
+            $clientap = Clientap::find($item->id);
 
-           $clientap->aptemplate_id = $item->aptemplate_id;
-           $clientap->save();
+            $activity = new Activity();
+            $activity->description = $clientap->client->user->username . " | Action Plan Template Attached";
+            $activity->user_id = Auth::id();
+            $activity->save();
+
+            $clientap->aptemplate_id = $item->aptemplate_id;
+            $clientap->save();
         });
     }
 }

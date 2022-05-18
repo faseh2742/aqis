@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Client;
 use App\Staff;
 use App\User;
+use App\Activity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -97,6 +98,10 @@ class StaffController extends Controller
                 'contactEmerg' => $request->contactEmerg,
             ]
         );
+        $activity=new Activity();
+        $activity->description=$staff->user->username." | Staff Updated";
+        $activity->user_id=Auth::id();
+        $activity->save();
         return response("Staff updated", 200);
     }
 
@@ -124,6 +129,10 @@ class StaffController extends Controller
         $staff = Staff::findOrFail($id);
 
         $staff->user()->delete();
+        $activity=new Activity();
+        $activity->description=$staff->user->username." | Staff Deleted";
+        $activity->user_id=Auth::id();
+        $activity->save();
 
         $staff->delete();
 
@@ -182,8 +191,18 @@ class StaffController extends Controller
 
         if ($user->staff()->first()) {
             $user->staff()->update($staffData);
+            $activity=new Activity();
+        $activity->description=$user->username." | Staff Updated";
+        $activity->user_id=Auth::id();
+        $activity->save();
         } else {
+            $activity=new Activity();
+            $activity->description=$user->username." | Staff Created";
+            $activity->user_id=Auth::id();
+            $activity->save();
             $user->staff()->create($staffData);
         }
+
+
     }
 }

@@ -77,18 +77,19 @@
           </h3>
         </md-card-header>
         <md-card-content>
-          <div class="bg-success">
+          <div>
             <b-card>
               <b-tabs card>
                 <b-tab
                   title="Profile"
                   v-on:click="showProfile = !showProfile"
-                  class="font-weight-bold text-uppercase text-success"
+                 :title-link-class="linkClass(0)"
                 >
                 </b-tab>
                 <b-tab
                   title="Documents"
                   v-on:click="showProfile = !showProfile"
+                :title-link-class="linkClass(1)"
                 >
                 </b-tab>
               </b-tabs>
@@ -733,7 +734,7 @@
                     <md-field>
                       <md-input
                         name="doc_file"
-                        accept=".pdf,.doc,.csv"
+                        accept=".pdf,.doc,.csv,.jpg"
                         v-model="doc_file"
                         v-on:change="onFileChange"
                         type="file"
@@ -865,6 +866,7 @@ export default {
       outcomeDate: "",
       phoneFormater: new PhoneFormater(),
       groupActivities: "",
+     tabIndex: 0
     };
   },
 
@@ -918,6 +920,13 @@ export default {
   },
 
   methods: {
+       linkClass(idx) {
+        if (this.tabIndex === idx) {
+          return ['bg-primary', 'text-danger','font-weight-bold']
+        } else {
+          return ['bg-light', 'text-success','font-weight-bold']
+        }
+      },
     onFileChange(e) {
       this.doc_file = e.target.files[0];
     },
@@ -1044,7 +1053,7 @@ export default {
           break;
         case "addOutcome":
           this.showAddOutcomeModal = false;
-          
+
           break;
         case "clientModal":
           this.showClientModal = false;
@@ -1218,6 +1227,12 @@ export default {
 </script>
 
 <style scoped>
+.tabs{
+ background-color: #b7d8b4;
+ color:white;
+  cursor: pointer;
+border-color: 2px solid #043306;
+}
 .header-collapsible {
   background-color: hsl(0, 0%, 92%);
   color: hsl(0, 0%, 21%);

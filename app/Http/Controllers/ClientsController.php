@@ -1,15 +1,17 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Client;
+use App\Activity;
 use App\Clientap;
 use App\Clienteducation;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 use \App\Rules\PhoneNumber;
 use \App\Rules\PostalCode;
+use App\User;
 use Illuminate\Support\Facades\DB;
 
 class ClientsController extends Controller
@@ -50,7 +52,7 @@ class ClientsController extends Controller
          ->where('wc_id', 'like',$search . '%')
          ->orWhere(function ($query) use ($search) {
              $query->whereHas('user', function ($q) use ($search) {
-                 $q->where('firstName', 'like', $search . '%');
+                 $q->where('user_id', 'like', $search . '%');
              });
          })
          ->orWhere(function ($query) use ($search) {
@@ -58,7 +60,7 @@ class ClientsController extends Controller
                 $q->where('email', 'like', $search . '%');
             });
         })
-  
+
          ->paginate(10);
          //  $resultClients = Client::search($request->input('string'))->with('user')->paginate(10);
          return $resultClients;
@@ -87,6 +89,11 @@ class ClientsController extends Controller
     {
 
         $client = Client::create($request->all());
+
+        $activity=new Activity();
+        $activity->description=$client->user->username." Client Added";
+        $activity->user_id=Auth::id();
+        $activity->save();
 
         return $client;
     }
@@ -145,6 +152,10 @@ class ClientsController extends Controller
             'childcareNeeded' => $request->childcareNeeded,
             'notes' => $request->notes,
         ]);
+          $activity=new Activity();
+          $activity->description=$request->user['username']." | Client Updated";
+          $activity->user_id=Auth::id();
+          $activity->save();
 
         return $client;
     }
@@ -156,6 +167,11 @@ class ClientsController extends Controller
         $client->highestEducation_id = $request->highestEducation_id;
 
         $client->save();
+
+        $activity=new Activity();
+        $activity->description=$client->user->username." | Education Updated";
+        $activity->user_id=Auth::id();
+        $activity->save();
     }
 
     public function updateOutcomes(Request $request)
@@ -167,7 +183,10 @@ class ClientsController extends Controller
         // }
 
         $client->outcomes()->syncWithoutDetaching([$request->outcomeSelected => ['created_at' => new Carbon]]);
-
+        $activity=new Activity();
+        $activity->description=$client->user->username." | Outcomes Updated";
+        $activity->user_id=Auth::id();
+        $activity->save();
         return $client;
     }
 
@@ -186,8 +205,12 @@ class ClientsController extends Controller
     public function destroy($id)
     {
         $client = Client::findorFail($id);
-        $client->delete();
 
+        $activity=new Activity();
+        $activity->description=$client->user->username." | Client Deleted";
+        $activity->user_id=Auth::id();
+        $activity->save();
+        $client->delete();
         return 204;
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Staff;
+use App\Activity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -43,6 +44,11 @@ class UserController extends Controller
             'lastName' => $request->lastName,
             'email' => $request->email,
         ]);
+          $activity=new Activity();
+          $activity->description=$user->username." | User Profile Updated";
+          $activity->user_id=Auth::id();
+          $activity->save();
+
     }
 
     public function updatePassword(Request $request)
@@ -77,7 +83,10 @@ class UserController extends Controller
             $user = User::find($id);
             $user->password = Hash::make($request->newPassword);
             $user->save();
-
+            $activity=new Activity();
+            $activity->description=$user->username." | User Password Updated";
+            $activity->user_id=Auth::id();
+            $activity->save();
             return response('Password updated', 200);
         } else {
             return response([

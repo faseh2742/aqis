@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Facilitator;
+use App\Activity;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Mail;
@@ -48,6 +50,11 @@ class AuthController extends Controller
                         'password' => $request->password,
                     ]
                 ]);
+                $user=User::where('username', $request->username)->where('active', 1)->first();
+                $activity=new Activity();
+                $activity->description=$request->username." | User Logged In";
+                $activity->user_id=$user->id;
+                $activity->save();
 
                 return $response->getBody();
             } catch (\GuzzleHttp\Exception\BadResponseException $error) {

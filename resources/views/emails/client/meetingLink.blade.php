@@ -9,10 +9,10 @@
 @component('mail::button', ['url' => $details->meetingLink])
 Join
 @endcomponent
-@component('mail::button', ['url' => env('APP_URL').'/api/meetingStatus/'.$details->id.'/Accept/'.encrypt($user->client_id)])
+@component('mail::button', ['url' => env('APP_URL').'/api/meetingStatus/'.$details->id.'/Accept'])
 Accept
 @endcomponent
-@component('mail::button', ['url' => env('APP_URL').'/api/meetingStatus/'.$details->id.'/Decline/'.encrypt($user->client_id)])
+@component('mail::button', ['url' => env('APP_URL').'/api/meetingStatus/'.$details->id.'/Decline'])
 Decline
 @endcomponent
 

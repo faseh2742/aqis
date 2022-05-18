@@ -50,8 +50,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 
 Route::get('/Testing', function () {
-    $search='111';
-   return App\Client::where('wc_id','LIKE',$search.'%')
-   ->with('user')
-   ->paginate(10);
+
+    return \App\Aptemplate::withCount('categories')
+            ->orderBy('categories_count', 'desc')->get();
+
 });

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,7 +100,7 @@ Route::group(['middleware' => ['auth:api', 'role:Facilitator']], function () {
         Route::get('trainings/{id}', 'ClienttrainingController@show');
         Route::get('employments/{id}', 'ClientemploymentController@show');
         Route::get('meetings/{id}', 'ClientmeetingController@show');
-        Route::get('meetingStatus/{id}/{status}', 'ClientmeetingController@updateStatus');
+
         Route::get('workshops/{id}', 'ClientworkshopController@show');
         Route::resource('education', 'ClienteducationController');
         Route::resource('employment', 'ClientemploymentController');
@@ -174,6 +175,11 @@ Route::group(['middleware' => ['auth:api', 'role:Facilitator']], function () {
         Route::resource('permission', 'PermissionController');
         Route::post('permission/{id}', 'PermissionController@update');
     });
+    //Dashboard Endpoints
+    Route::get('getReferrals', 'DashboardController@getReferrals');
+    Route::get('getNocs', 'DashboardController@getNocs');
+    Route::get('getMeetings', 'DashboardController@getMeetings');
+    Route::get('getActivities', 'DashboardController@getActivities');
 });
 
 //Unrestricted Endpoints
@@ -182,7 +188,7 @@ Route::get('getdropdown/{id}', 'DropdownController@getDropdown')->middleware('au
 Route::get('getLanguages', 'LanguageController@index')->middleware('auth:api'); //Restricting this makes Languages unreadable in forms.
 Route::get('getCities', 'CityController@index')->middleware('auth:api'); //Restricting this makes Cities unreadable in forms.
 
-
+Route::get('meetingStatus/{id}/{status}', 'ClientmeetingController@updateStatus');
 
 
 
@@ -198,4 +204,12 @@ Route::get('getCities', 'CityController@index')->middleware('auth:api'); //Restr
 // Route::delete('clients/{id}', 'ClientsController@destroy')->middleware('auth:api');
 
 //Route::get('report/forum', 'ClientworkshopController@generateReport');//->middleware('auth:api');
+
+Route::get('/Testing', function () {
+    //   $user_id = Auth::id();
+
+       $user = App\User::findorFail(2);
+
+       return $user;
+});
 
