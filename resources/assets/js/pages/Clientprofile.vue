@@ -12,6 +12,7 @@
     <AddOutcomeModal
       :client_id="client.id"
       :editing="true"
+      :category_id='category_id'
       @close="closeModal('addOutcome')"
       v-if="showAddOutcomeModal"
     >
@@ -672,7 +673,7 @@
                       >
 
                         <a
-                          @click="openModal('addOutcome')"
+                          @click="openModal('addOutcome',category)"
                           v-if="$root.canWrite('clients')"
                           class="button is-success"
                           type="button"
@@ -866,7 +867,8 @@ export default {
       outcomeDate: "",
       phoneFormater: new PhoneFormater(),
       groupActivities: "",
-     tabIndex: 0
+     tabIndex: 0,
+     category_id:null
     };
   },
 
@@ -969,7 +971,10 @@ export default {
             confirmButtonText: "OK",
           }).then(function (isConfirm) {
             if (isConfirm) {
-              this.getDocs();
+              if (response) {
+            // this.$router.push("/clients/",this.clientID);
+            location.reload();
+                }
             }
           });
         })
@@ -1004,7 +1009,8 @@ export default {
       });
     },
     // OPEN MODAL SWITCH
-    openModal(name) {
+    openModal(name,data) {
+    this.category_id=data.id
       switch (name) {
         case "feedbackModal":
           this.meetingEdit = null;
@@ -1121,6 +1127,7 @@ export default {
           break;
       }
     },
+
     // DELETE METHODS
     deleteClient() {
       let payload = {

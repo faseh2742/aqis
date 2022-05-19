@@ -8,14 +8,24 @@
           <button class="delete" aria-label="close" @click="close"></button>
         </header>
         <section class="modal-card-body">
-          <form method="post" @submit.prevent="saveItem()" id="addOutcomeForm">
+          <form method="post" @submit.prevent="saveItem()" id="addOutcomeForm" v-if="load=="false">
             <div class="md-layout">
               <label class="md-layout-item md-size-15 md-form-label">
-                Outcome
+                Outcome {{category_list}}
               </label>
               <div class="md-layout-item">
                 <md-field>
-                  <md-input v-model="outcome" type="text"></md-input>
+                  <!-- <md-input v-model="outcome" type="text"></md-input> -->
+
+                    <select
+                    class="select md-menu md-select"
+                    v-model="selectedOutcome"
+
+                    id="status"
+                  >
+                    <option  :value="data.outcome" v-for="(data,index) in category_list" :key="index">{{data.outcome}}</option>
+
+                  </select>
                 </md-field>
                 <span class="help is-danger"></span>
               </div>
@@ -69,12 +79,17 @@ import { mapFields } from "vuex-map-fields";
 export default {
   name: "AddOutcomeModal",
 
-  props: ["client_id", "editing"],
+  props: ["client_id", "editing","category_id"],
 
-  created() {},
+  computed: {
+    dList() {
+      return this.category_list;
+    }
+  },
 
   mounted() {
     this.fetchData();
+     this.getCategory(this.category_id)
     console.log("Dropdown", this.outcomeStatuses);
   },
 
@@ -82,15 +97,17 @@ export default {
     return {
       users: [],
       outcomeStatuses: [],
-
-      client_id: this.props.client_id,
+    //   client_id: this.props.client_id,
       category_id: 1,
-      outcome: "",
+      outcomes: [],
+        category_list: [],
+      selectedOutcome: "",
       status: "",
       notes: "",
+      load:true
     };
   },
-  components: {},
+
 
   methods: {
     close() {
@@ -121,6 +138,20 @@ export default {
         console.log("Data ", response[0].data.items);
         this.outcomeStatuses = response[0].data.items;
         console.log("drop", this.outcomeStatuses);
+      });
+    },
+    getCategory(id) {
+      let payload = {
+        url: "/api/getoutcomes/",
+        id: id
+      };
+
+      let vm = this
+      this.$store.dispatch("getCategoryRecord", payload).then((response) => {
+        if (response) {
+            vm.category_list = response.data
+            vm.load = false
+        }
       });
     },
   },

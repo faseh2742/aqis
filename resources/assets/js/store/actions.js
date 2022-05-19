@@ -588,6 +588,24 @@ export default {
         }
     },
 
+    async getCategoryRecord(context, payload) {
+
+        return new Promise((resolve, reject) => {
+            axios.get(payload.url + payload.id)
+                .then(response => {
+                    resolve(response);
+                })
+                .catch(errors => {
+                    if (errors.response.data.errors) {
+                        // this.onFailedSubmit(errors.response.data.errors);
+                        reject(errors.response.data.errors);
+                    } else {
+                        // this.onFailedSubmit(errors.response);
+                        reject(errors.response);
+                    }
+                });
+        });
+    },
     async confirmation(context, payload) {
         const result = await Swal.fire({
             title: payload.title,
